@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { BuyerProduct, Filters } from 'ordercloud-javascript-sdk'
-import { FunctionComponent, useCallback, useState, useEffect } from 'react'
+import { FunctionComponent, useCallback } from 'react'
 import OcProductCard from '../../ordercloud/components/OcProductCard'
 import OcProductFacetForm from '../../ordercloud/components/OcProductFacetsForm'
 import OcProductList from '../../ordercloud/components/OcProductList'

@@ -55,7 +55,7 @@ const OcAddressForm: FunctionComponent<OcAddressFormProps> = ({
   }, [address, formValues])
 
   return (
-    <form onSubmit={handleFormSubmit}>
+    <form onSubmit={handleFormSubmit} className='addressBook bg-green-200 p-4 md:max-w-[350px] lg:max-w-[480px]'>
       <label htmlFor={`${id}_address_addressName`}>
         Address Name
         <input
@@ -184,15 +184,17 @@ const OcAddressForm: FunctionComponent<OcAddressFormProps> = ({
           onChange={handleInputChange('Phone')}
         />
       </label>
-      <button type="button" onClick={handleDeleteAddress} disabled={hasChanges || !address.ID}>
-        Delete Address
-      </button>
-      <button type="button" onClick={handleDiscardChanges} disabled={!hasChanges}>
-        Discard Changes
-      </button>
-      <button type="submit" disabled={!hasChanges}>
-        {address && address.ID ? 'Update Address' : 'Save Address'}
-      </button>
+      <div className='md:max-w-[350px] lg:max-w-[480px]'>
+        <button type="button" onClick={handleDeleteAddress} disabled={hasChanges || !address.ID}>
+          Delete Address
+        </button>
+        <button type="button" onClick={handleDiscardChanges} disabled={!hasChanges}>
+          Discard Changes
+        </button>
+        <button type="submit" disabled={!hasChanges}>
+          {address && address.ID ? 'Update Address' : 'Save Address'}
+        </button>
+      </div>
     </form>
   )
 }

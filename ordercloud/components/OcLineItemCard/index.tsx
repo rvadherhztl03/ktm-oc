@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux'
 import useOcProduct from '../../hooks/useOcProduct'
 import { removeLineItem, updateLineItem } from '../../redux/ocCurrentOrder'
 import OcQuantityInput from '../OcQuantityInput'
+import Image from 'next/image'
 
 interface OcLineItemCardProps {
   lineItem: LineItem
@@ -39,52 +40,85 @@ const OcLineItemCard: FunctionComponent<OcLineItemCardProps> = ({ lineItem, edit
   }, [lineItem, disabled, quantity])
 
   return (
-    <div>
-      <p>
-        <b>{lineItem.Product.Name}</b>
-        {lineItem.Specs.map((s) => (
-          <span key={s.SpecID}>
-            <br />
-            {`${s.Name}: ${s.Value}`}
-          </span>
-        ))}
-      </p>
+    <div className='cartWrapper'>
 
-      {editable ? (
-        <>
-          <button
-            aria-label="Remove Line Item"
-            type="button"
-            disabled={disabled}
-            onClick={handleRemoveLineItem}
-          >
-            Remove
-          </button>
-          <Link href={`/products/${lineItem.ProductID}?lineitem=${lineItem.ID}`}>
-            <a aria-label="Edit Line Item">Edit</a>
-          </Link>
-          {product && (
-            <form onSubmit={handleUpdateLineItem}>
-              <OcQuantityInput
-                controlId={`${lineItem.ID}_quantity`}
-                quantity={quantity}
-                disabled={disabled}
-                onChange={setQuantity}
-                priceSchedule={product.PriceSchedule}
-              />
-              <button
-                type="submit"
-                aria-label="Update Line Item Quantity"
-                disabled={isUpdateDisabled}
-              >
-                Update
-              </button>
-            </form>
-          )}
-        </>
-      ) : (
-        <p>{`Quantity: ${lineItem.Quantity}`}</p>
-      )}
+      <div className='productTitle flex justify-between items-base'>
+        <p className=''>
+          {lineItem.Product.Name}
+          {lineItem.Specs.map((s) => (
+            <span key={s.SpecID}>
+              <br />
+              {`${s.Name}: ${s.Value}`}
+            </span>
+          ))}
+        </p>
+        <div className="ctaActionWrapper flex">
+          { 
+            editable && (
+              <Link href={`/products/${lineItem.ProductID}?lineitem=${lineItem.ID}`}>
+                  <a aria-label="Edit Line Item" className='ctaButton px-1 w-fit text-center mx-3'>Edit</a>
+                </Link>
+            )
+          }
+
+          {
+            editable && (
+                <button
+                  aria-label="Remove Line Item"
+                  type="button"
+                  disabled={disabled}
+                  onClick={handleRemoveLineItem}
+                  className='ctaButton px-1 w-fit text-center mx-3'
+                >
+                  Remove
+                </button>
+            )
+          }
+
+        </div>
+      </div>
+
+      <div className='productDetails md:flex md:justify-start'>
+        
+        <div className='imgWrapper md:mr-4 md:w-1/4'>
+            {
+              product?.xp?.ImageUrl && (
+                <Image src={product?.xp?.ImageUrl} width={150} height={150} className='object-cover'/>
+              )
+            }
+        </div>
+
+        {editable ? (
+          <>
+            {product && (
+              <form onSubmit={handleUpdateLineItem} className='w-full'>
+                <div className='h-full flex justify-between items-baseline md:items-center md:flex-auto mx-2'>
+                  <OcQuantityInput
+                    controlId={`${lineItem.ID}_quantity`}
+                    quantity={quantity}
+                    disabled={disabled}
+                    onChange={setQuantity}
+                    priceSchedule={product.PriceSchedule}
+                  />
+                  <button
+                    type="submit"
+                    aria-label="Update Line Item Quantity"
+                    disabled={isUpdateDisabled}
+                    className='ctaButton w-1/6'
+                    >
+                    Update
+                  </button>
+
+                </div>
+              </form>
+            )}
+          </>
+        ) : (
+          <p>{`Quantity: ${lineItem.Quantity}`}</p>
+        )}
+      </div>
+
+
     </div>
   )
 }

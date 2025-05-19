@@ -9,13 +9,15 @@ const CartPage: FunctionComponent = () => {
 
   return (
     <div>
-      <button type="button" onClick={() => dispatch(deleteCurrentOrder())}>
-        Clear Cart
-      </button>
+      <div className="cartActionWrapper mt-10 container mx-auto flex justify-end">
+        <button type="button" onClick={() => dispatch(deleteCurrentOrder())} className="mx-5 ">
+          Clear Cart
+        </button>
+        <Link href="/checkout">
+          <a>Checkout</a>
+        </Link>
+      </div>
       <OcLineItemList emptyMessage="Your shopping cart is empty" editable />
-      <Link href="/checkout">
-        <a>Checkout</a>
-      </Link>
     </div>
   )
 }

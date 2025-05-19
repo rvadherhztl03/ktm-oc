@@ -27,9 +27,9 @@ const OcQuantityInput: FunctionComponent<OcQuantityInputProps> = ({
   }
 
   return (
-    <label htmlFor={controlId}>
+    <label htmlFor={controlId} className="quantityWrapper font-cust mt-8 items-base">
       {label}
-      {priceSchedule.RestrictedQuantity ? (
+      {priceSchedule?.RestrictedQuantity ? (
         // eslint-disable-next-line
         <select id={controlId} disabled={disabled} value={quantity} onChange={handleSelectChange}>
           {priceSchedule.PriceBreaks.map((pb) => (
@@ -43,11 +43,12 @@ const OcQuantityInput: FunctionComponent<OcQuantityInputProps> = ({
           id={controlId}
           disabled={disabled}
           type="number"
-          min={priceSchedule.MinQuantity}
-          max={priceSchedule.MaxQuantity}
+          min={priceSchedule?.MinQuantity}
+          max={priceSchedule?.MaxQuantity}
           step={1}
           value={quantity}
           onChange={handleInputChange}
+          className="p-4 w-full rounded bg-white border"
         />
       )}
     </label>

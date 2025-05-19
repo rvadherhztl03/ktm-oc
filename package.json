@@ -11,6 +11,7 @@
   "dependencies": {
     "@ordercloud/catalyst": "^1.2.0",
     "@reduxjs/toolkit": "^1.9.5",
+    "@tailwindcss/postcss": "^4.1.7",
     "axios": "^1.2.0",
     "lodash": "^4.17.21",
     "next": "12.2.0",
@@ -27,8 +28,9 @@
     "@typescript-eslint/parser": "^6.4.0",
     "babel-plugin-module-resolver": "^4.1.0",
     "eslint": "^8.47.0",
-    "postcss": ">=8.2.10",
+    "postcss": "^8.5.3",
     "prettier": "^2.2.1",
+    "tailwindcss": "^3.4.17",
     "typescript": "^5.1.6"
   }
 }

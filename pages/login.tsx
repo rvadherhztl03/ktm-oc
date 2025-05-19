@@ -10,7 +10,7 @@ const LoginPage: FunctionComponent = () => {
   }
 
   return (
-    <div>
+    <div className='loginWrapper'>
       <OcLoginForm onLoggedIn={handleOnLoggedIn} />
     </div>
   )

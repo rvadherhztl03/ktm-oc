@@ -1,10 +1,12 @@
 import Link from 'next/link'
 import { BuyerProduct, Filters } from 'ordercloud-javascript-sdk'
-import { FunctionComponent, useCallback } from 'react'
+import { FunctionComponent, useCallback, useState, useEffect } from 'react'
 import OcProductCard from '../../ordercloud/components/OcProductCard'
 import OcProductFacetForm from '../../ordercloud/components/OcProductFacetsForm'
 import OcProductList from '../../ordercloud/components/OcProductList'
 import useNextRouterMapping, { NextQueryMap } from '../../ordercloud/hooks/useNextRouterMapping'
+import ClientOnly from '../../helper/ClientOnly'
+import Image from 'next/image'
 
 const queryMap: NextQueryMap = {
   search: 's',
@@ -28,6 +30,7 @@ const ProductListPage: FunctionComponent = () => {
     [options, updateQuery]
   )
 
+
   const handleRenderItem = (p: BuyerProduct) => {
     return (
       <Link href={`/products/${p.ID}`}>
@@ -37,14 +40,25 @@ const ProductListPage: FunctionComponent = () => {
       </Link>
     )
   }
-
   return (
     isReady && (
       <>
-        <h2>Facets</h2>
-        <OcProductFacetForm onChange={handleFacetChange} />
-        <h2>Products</h2>
-        <OcProductList options={options} renderItem={handleRenderItem} />
+        <div className="banner h-screen w-full relative flex items-center justify-center">
+          <Image
+            src="/images/product.webp"
+            alt="Home page"
+            layout="fill"
+            className="w-full overflow-hidden object-cover"
+            unoptimized
+            priority
+          />
+        </div>
+        <ClientOnly>
+          <div className="productBackgroundWrapper relative h-screen ">
+            <OcProductFacetForm onChange={handleFacetChange} />
+            <OcProductList options={options} renderItem={handleRenderItem} />
+          </div>
+        </ClientOnly>
       </>
     )
   )

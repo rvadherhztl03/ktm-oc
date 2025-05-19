@@ -11,9 +11,9 @@ const OcLineItemList: FunctionComponent<OcLineItemListProps> = ({ emptyMessage, 
   const { lineItems } = useOcCurrentOrder()
 
   return lineItems && lineItems.length ? (
-    <ol>
+    <ol className='cartItemWrapper bg-stone-100 container mx-auto my-10 py-4'>
       {lineItems.map((li) => (
-        <li key={li.ID}>
+        <li key={li.ID} className='mb-6 mx-4'>
           <OcLineItemCard lineItem={li} editable={editable} />
         </li>
       ))}

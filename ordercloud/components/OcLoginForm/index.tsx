@@ -54,10 +54,15 @@ const OcLoginForm: FunctionComponent<OcLoginFormProps> = ({
   }, [isAnonymous, onLoggedIn])
 
   return (
-    <form name="ocLoginForm" onSubmit={handleSubmit}>
-      <h1>{title}</h1>
+    <form
+      name="ocLoginForm"
+      onSubmit={handleSubmit}
+      className="absolute md:container md:mx-auto bg-orange-100 rounded-lg flex flex-col px-4 md:items-center md:w-fit md:px-4 md:py-8 min-w-[400px] bg-white p-4 rounded-lg shadow-lg max-w-md mx-auto relative opacity-90"
+    >
+      <h1 className="pb-4">{title}</h1>
       {error && <p>{error.message}</p>}
-      <label htmlFor="identifier">
+
+      <label htmlFor="identifier" className="pb-6  min-w-[80%] text-gray-600">
         Username
         <input
           type="text"
@@ -67,9 +72,11 @@ const OcLoginForm: FunctionComponent<OcLoginFormProps> = ({
           value={formValues.identifier}
           onChange={handleInputChange('identifier')}
           required
+          className="p-2 w-full text-gray-600"
         />
       </label>
-      <label htmlFor="password">
+
+      <label htmlFor="password" className="pb-6 min-w-[80%] text-gray-600">
         Password
         <input
           type="password"
@@ -79,19 +86,29 @@ const OcLoginForm: FunctionComponent<OcLoginFormProps> = ({
           value={formValues.password}
           onChange={handleInputChange('password')}
           required
+          className="p-2 w-full text-gray-600"
         />
       </label>
-      <label htmlFor="remember">
+
+      <label htmlFor="remember" className="pb-6">
         <input
           type="checkbox"
           id="remember"
           name="remember"
           checked={formValues.remember}
           onChange={handleCheckboxChange('remember')}
+          className="mr-3"
         />
         Keep me logged in
       </label>
-      <button disabled={loading} type="submit">
+
+      <button
+        disabled={loading}
+        type="submit"
+        className="p-2 rounded-lg px-5 py-2 hover:cursor-pointer hover:text-neutral-200 
+      bg-gradient-to-r from-green-400 to-blue-500 hover:from-pink-500 hover:to-yellow-500 
+      "
+      >
         Submit
       </button>
     </form>

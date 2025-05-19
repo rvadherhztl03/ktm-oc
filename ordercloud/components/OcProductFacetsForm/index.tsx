@@ -71,11 +71,11 @@ const OcProductFacetsForm: FunctionComponent<OcProductFacetsFormProps> = ({ onCh
   )
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="filterForm bg-stone-100 w-fit p-3">
       {meta && meta.Facets && meta.Facets.map(mapProductFacets)}
-      <button type="submit" disabled={loading}>
+      {/* <button type="submit" disabled={loading}>
         Apply Filters
-      </button>
+      </button> */}
       {showClearButton && (
         <button type="button" disabled={loading} onClick={handleClearFilters}>
           Clear Filters

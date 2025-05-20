@@ -2,7 +2,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { FunctionComponent, useState } from 'react'
 // import logout from '../ordercloud/redux/ocAuth/logout'
-import { useOcDispatch, useOcSelector } from '../ordercloud/redux/ocStore'
+// import { useOcDispatch, useOcSelector } from '../ordercloud/redux/ocStore'
 import Image from 'next/image'
 const Layout: FunctionComponent = ({ children }) => {
   const [isDropDownOpen, setIsDropDownOpen] = useState(false)

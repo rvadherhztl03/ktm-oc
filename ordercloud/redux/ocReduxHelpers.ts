@@ -26,7 +26,7 @@ export function createOcAsyncThunk<Returned, ThunkArg = void>(
     typePrefix,
     async (args, thunkAPI) => {
       try {
-        return await payloadCreator(args, thunkAPI) as any
+        return await payloadCreator(args, thunkAPI)
       } catch (err) {
         if (err.isOrderCloudError) {
           switch (err.status) {

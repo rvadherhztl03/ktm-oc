@@ -2,6 +2,7 @@
 import { BuyerProduct } from 'ordercloud-javascript-sdk'
 import { FunctionComponent } from 'react'
 import Image from 'next/image'
+import HoverImage from '../../../helper/HoverImage'
 
 interface OcProductCardProps {
   product: BuyerProduct

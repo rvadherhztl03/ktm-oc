@@ -1,34 +1,34 @@
 import Head from 'next/head'
-// import Link from 'next/link'
+import Link from 'next/link'
 import { FunctionComponent, useState } from 'react'
-// import logout from '../ordercloud/redux/ocAuth/logout'
-// import { useOcDispatch, useOcSelector } from '../ordercloud/redux/ocStore'
+import logout from '../ordercloud/redux/ocAuth/logout'
+import { useOcDispatch, useOcSelector } from '../ordercloud/redux/ocStore'
 import Image from 'next/image'
 const Layout: FunctionComponent = ({ children }) => {
   const [isDropDownOpen, setIsDropDownOpen] = useState(false)
 
-  // const dispatch = useOcDispatch()
-  // const { user, isAnonymous, loading, lineItemCount } = useOcSelector((s) => ({
-  //   user: s.ocUser.user,
-  //   loading: s.ocAuth.loading,
-  //   isAnonymous: s.ocAuth.isAnonymous,
-  //   lineItemCount: s.ocCurrentOrder.order ? s.ocCurrentOrder.order.LineItemCount : 0,
-  // }))
+  const dispatch = useOcDispatch()
+  const { user, isAnonymous, loading, lineItemCount } = useOcSelector((s) => ({
+    user: s.ocUser.user,
+    loading: s.ocAuth.loading,
+    isAnonymous: s.ocAuth.isAnonymous,
+    lineItemCount: s.ocCurrentOrder.order ? s.ocCurrentOrder.order.LineItemCount : 0,
+  }))
 
-  // const MenuItems = [
-  //   {
-  //     title: 'Home',
-  //     link: '/',
-  //   },
-  //   {
-  //     title: 'Products',
-  //     link: '/products',
-  //   },
-  //   {
-  //     title: 'Cart',
-  //     link: '/cart',
-  //   },
-  // ]
+  const MenuItems = [
+    {
+      title: 'Home',
+      link: '/',
+    },
+    {
+      title: 'Products',
+      link: '/products',
+    },
+    {
+      title: 'Cart',
+      link: '/cart',
+    },
+  ]
 
   return (
     <>
@@ -80,7 +80,7 @@ const Layout: FunctionComponent = ({ children }) => {
             />
             {/* </div> */}
 
-            <div className="flex gap-24 items-center ">
+            <div className="flex gap-24 items-center">
               <div
                 onClick={() => {
                   setIsDropDownOpen(!isDropDownOpen)
@@ -159,36 +159,42 @@ const Layout: FunctionComponent = ({ children }) => {
 
           {isDropDownOpen && (
             <div className="flex bg-[#f8f9fa] absolute top-[99px] right-[210px] h-[300px] w-[700px] pt-20">
-              <div className="flex flex-col gap-4 text-center">
-                <Image
-                  src="/images/b1.webp"
-                  // src='/images/storeLogo.png'
-                  alt="sd"
-                  height={100}
-                  width={150}
-                />
-                <span>2309</span>
-              </div>
-              <div className="flex flex-col gap-4 text-center">
-                <Image
-                  src="/images/b2.webp"
-                  // src='/images/storeLogo.png'
-                  alt="sd"
-                  height={100}
-                  width={150}
-                />
-                <span>2310</span>
-              </div>
-              <div className="flex flex-col gap-4 text-center">
-                <Image
-                  src="/images/b3.webp"
-                  // src='/images/storeLogo.png'
-                  alt="sd"
-                  height={100}
-                  width={150}
-                />
-                <span>2311</span>
-              </div>
+              <Link href="/products">
+                <div className="flex flex-col gap-4 text-center">
+                  <Image
+                    src="/images/b1.webp"
+                    // src='/images/storeLogo.png'
+                    alt="sd"
+                    height={100}
+                    width={150}
+                  />
+                  <span>2309</span>
+                </div>
+              </Link>
+              <Link href="/products">
+                <div className="flex flex-col gap-4 text-center">
+                  <Image
+                    src="/images/b2.webp"
+                    // src='/images/storeLogo.png'
+                    alt="sd"
+                    height={100}
+                    width={150}
+                  />
+                  <span>2310</span>
+                </div>
+              </Link>
+              <Link href="/products">
+                <div className="flex flex-col gap-4 text-center">
+                  <Image
+                    src="/images/b3.webp"
+                    // src='/images/storeLogo.png'
+                    alt="sd"
+                    height={100}
+                    width={150}
+                  />
+                  <span>2311</span>
+                </div>
+              </Link>
             </div>
           )}
         </header>

@@ -1,12 +1,12 @@
 import { FunctionComponent, useState } from 'react'
 import Image from 'next/image'
-// import { useOcSelector } from '../ordercloud/redux/ocStore'
+import { useOcSelector } from '../ordercloud/redux/ocStore'
 import styles from '../styles/Home.module.css'
 import OcLoginForm from '../ordercloud/components/OcLoginForm'
 
 const Home: FunctionComponent = () => {
   const [logIn, setLogIn] = useState(false)
-  // const user = useOcSelector((s) => s.ocUser.user)
+  const user = useOcSelector((s) => s.ocUser.user)
 
   return (
     <>

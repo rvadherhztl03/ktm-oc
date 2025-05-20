@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { BuyerProduct, Filters } from 'ordercloud-javascript-sdk'
-import { FunctionComponent, useCallback } from 'react'
+import { FunctionComponent, useCallback, useState, useEffect } from 'react'
 import OcProductCard from '../../ordercloud/components/OcProductCard'
 import OcProductFacetForm from '../../ordercloud/components/OcProductFacetsForm'
 import OcProductList from '../../ordercloud/components/OcProductList'
@@ -30,13 +30,10 @@ const ProductListPage: FunctionComponent = () => {
     [options, updateQuery]
   )
 
-
   const handleRenderItem = (p: BuyerProduct) => {
     return (
       <Link href={`/products/${p.ID}`}>
-        <a>
-          <OcProductCard product={p} />
-        </a>
+        <OcProductCard product={p} />
       </Link>
     )
   }

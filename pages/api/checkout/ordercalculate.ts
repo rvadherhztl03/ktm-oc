@@ -1,13 +1,12 @@
-import { NextApiHandler } from 'next'
+import { NextApiHandler, NextApiRequest } from 'next'
 import { OrderCalculateResponse, OrderWorksheet } from 'ordercloud-javascript-sdk'
-import { withOcWebhookAuth } from '@ordercloud/catalyst'
+import withOcHashValidation from '../../../ordercloud/utils/withOcHashValidation'
 
-// withOCWebhookAuth needs the raw body in order to validate the payload is coming from ordercloud
 export const config = {
   api: {
     bodyParser: false,
   },
-};
+}
 
 export type OrderCloudEnvironment = 'Production' | 'Staging' | 'Sandbox' | 'Qa'
 
@@ -26,4 +25,4 @@ const OrderCalculateHandler: NextApiHandler<OrderCalculateResponse> = (req, res)
   })
 }
 
-export default withOcWebhookAuth(OrderCalculateHandler)
+export default withOcHashValidation(OrderCalculateHandler, process.env.NEXT_OC_HASH_KEY)

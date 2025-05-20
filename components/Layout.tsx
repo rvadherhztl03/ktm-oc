@@ -1,34 +1,34 @@
 import Head from 'next/head'
 import Link from 'next/link'
 import { FunctionComponent, useState } from 'react'
-import logout from '../ordercloud/redux/ocAuth/logout'
+// import logout from '../ordercloud/redux/ocAuth/logout'
 import { useOcDispatch, useOcSelector } from '../ordercloud/redux/ocStore'
 import Image from 'next/image'
 const Layout: FunctionComponent = ({ children }) => {
   const [isDropDownOpen, setIsDropDownOpen] = useState(false)
 
-  const dispatch = useOcDispatch()
-  const { user, isAnonymous, loading, lineItemCount } = useOcSelector((s) => ({
-    user: s.ocUser.user,
-    loading: s.ocAuth.loading,
-    isAnonymous: s.ocAuth.isAnonymous,
-    lineItemCount: s.ocCurrentOrder.order ? s.ocCurrentOrder.order.LineItemCount : 0,
-  }))
+  // const dispatch = useOcDispatch()
+  // const { user, isAnonymous, loading, lineItemCount } = useOcSelector((s) => ({
+  //   user: s.ocUser.user,
+  //   loading: s.ocAuth.loading,
+  //   isAnonymous: s.ocAuth.isAnonymous,
+  //   lineItemCount: s.ocCurrentOrder.order ? s.ocCurrentOrder.order.LineItemCount : 0,
+  // }))
 
-  const MenuItems = [
-    {
-      title: 'Home',
-      link: '/',
-    },
-    {
-      title: 'Products',
-      link: '/products',
-    },
-    {
-      title: 'Cart',
-      link: '/cart',
-    },
-  ]
+  // const MenuItems = [
+  //   {
+  //     title: 'Home',
+  //     link: '/',
+  //   },
+  //   {
+  //     title: 'Products',
+  //     link: '/products',
+  //   },
+  //   {
+  //     title: 'Cart',
+  //     link: '/cart',
+  //   },
+  // ]
 
   return (
     <>

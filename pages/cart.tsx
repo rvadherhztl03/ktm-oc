@@ -1,11 +1,11 @@
-import Link from 'next/link'
+// import Link from 'next/link'
 import { FunctionComponent } from 'react'
 import OcLineItemList from '../ordercloud/components/OcLineItemList'
-import { deleteCurrentOrder } from '../ordercloud/redux/ocCurrentOrder'
-import { useOcDispatch } from '../ordercloud/redux/ocStore'
+// import { deleteCurrentOrder } from '../ordercloud/redux/ocCurrentOrder'
+// import { useOcDispatch } from '../ordercloud/redux/ocStore'
 
 const CartPage: FunctionComponent = () => {
-  const dispatch = useOcDispatch()
+  // const dispatch = useOcDispatch()
 
   return (
     <div className="">

@@ -5,11 +5,11 @@ import * as Yup from 'yup'
 import { User, Phone, MapPin, Store, Calendar } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import useOcProductDetail from '../../../ordercloud/hooks/useOcProductDetail'
-import useOcCart from '../../../ordercloud/redux/useOcCart'
-import ImageHelper from '../../../helper/Image'
-import formatPrice from '../../../ordercloud/utils/formatPrice'
 import { Me } from 'ordercloud-javascript-sdk'
+import useOcProductDetail from '../../../../ordercloud/hooks/useOcProductDetail'
+import ImageHelper from '../../../../helper/Image'
+import formatPrice from '../../../../ordercloud/utils/formatPrice'
+import useOcCart from '../../../../ordercloud/redux/useOcCart'
 
 // Validation schema
 const validationSchema = Yup.object({
@@ -88,7 +88,7 @@ export default function ProductBookingPage() {
     try {
       // console.log('Form submitted:', values)
       const xp = { ...values, selectedModel: selectedModel, selectedColor: selectedColor }
-      await addToCart({ productId: product?.ID, quantity: 1, specs: variants?.[0]?.Specs, xp })
+      await addToCart({ productId: product?.ID, quantity: 1, xp })
 
       router.push(`/checkout`)
     } catch (error) {

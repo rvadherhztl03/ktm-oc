@@ -28,10 +28,10 @@ const OcProductDetail: FunctionComponent<OcProductDetailProps> = ({
   onLineItemUpdated,
 }) => {
   const dispatch = useOcDispatch()
-  const { product, specs, variants } = useOcProductDetail(productId)
+  const { product, specs } = useOcProductDetail(productId)
   const [loading, setLoading] = useState(false)
 
-  const router = useRouter();
+  const router = useRouter()
 
   const [specValues, setSpecValues] = useState([])
 
@@ -87,7 +87,7 @@ const OcProductDetail: FunctionComponent<OcProductDetailProps> = ({
       if (onLineItemAdded) {
         onLineItemAdded()
       }
-      router.push('/cart');
+      router.push('/cart')
     },
     [dispatch, product, quantity, onLineItemAdded, specValues]
   )
@@ -102,7 +102,7 @@ const OcProductDetail: FunctionComponent<OcProductDetailProps> = ({
         onLineItemUpdated()
       }
 
-      router.push('/cart');
+      router.push('/cart')
     },
     [dispatch, lineItem, quantity, onLineItemUpdated, specValues]
   )
@@ -119,6 +119,7 @@ const OcProductDetail: FunctionComponent<OcProductDetailProps> = ({
           //   className="object-cover"
           // />
           <Image
+            alt={product?.Name}
             src="/images/b1.webp"
             width={1000}
             height={650}

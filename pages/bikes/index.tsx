@@ -19,7 +19,7 @@ const ProductListPage: FunctionComponent = () => {
   return (
     <ClientOnly>
       <div className="container mx-auto">
-        <div className="pt-[108px] lg:pt-[85px]">
+        <div className="lg:pt-[85px]">
           <h1 className="text-[49px] lg:text-[70px] font-bold">EXPLORE KTM ALL BIKES COLLECTION</h1>
           <p className="font-semibold">
             KTM bikes are known for their high-performance, rugged design, and advanced technology.

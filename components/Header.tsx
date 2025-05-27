@@ -74,8 +74,8 @@ const Header = () => {
   return (
     <header className={`header w-full  font-semibold text-sm lg:text-lg relative `}>
       <div
-        className={`fixed z-30 w-full px-5 flex justify-between lg:justify-normal gap-5 items-center  uppercase text-md   ${
-          isModelsMenuOpen ? 'bg-white text-black' : 'bg-transparent shadow-header text-white'
+        className={`fixed bg-transparent z-30 w-full px-5 flex justify-between lg:justify-normal gap-5 items-center  uppercase text-md   ${
+          isModelsMenuOpen ? 'bg-white text-black' : 'shadow-header text-white'
         }`}
       >
         <div className="flex items-center gap-5">
@@ -84,7 +84,7 @@ const Header = () => {
               <ImageHelper
                 url="https://cdn.bajajauto.com/images/ktm/header/ktm-logo.png"
                 alt="home page"
-                className="block w-[120px] lg:w-auto"
+                className="block w-[95px] lg:w-auto"
               />
             </div>
           </Link>

@@ -18,8 +18,8 @@ const ProductListPage: FunctionComponent = () => {
   }
   return (
     <ClientOnly>
-      <div className="productBackgroundWrapper container mx-auto ">
-        <div className="mt-12">
+      <div className="container mx-auto">
+        <div className="pt-[108px] lg:pt-[85px]">
           <h1 className="text-[49px] lg:text-[70px] font-bold">EXPLORE KTM ALL BIKES COLLECTION</h1>
           <p className="font-semibold">
             KTM bikes are known for their high-performance, rugged design, and advanced technology.
@@ -27,13 +27,13 @@ const ProductListPage: FunctionComponent = () => {
             sharp handling, and a distinctive style, making them a top choice for racing enthusiasts
             and thrill-seekers worldwide.
           </p>
+          <OcProductList
+            options={{
+              catalogID: 'KTM_Catalog',
+            }}
+            renderItem={handleRenderItem}
+          />
         </div>
-        <OcProductList
-          options={{
-            catalogID: 'KTM_Catalog',
-          }}
-          renderItem={handleRenderItem}
-        />
       </div>
     </ClientOnly>
   )

@@ -55,7 +55,7 @@ const CategoryListPage: FunctionComponent = () => {
 
   return (
     <ClientOnly>
-      <div className="productBackgroundWrapper relative">
+      <div className="productBackgroundWrapper ">
         <OcProductList
           options={{
             ...options,

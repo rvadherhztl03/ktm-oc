@@ -6,6 +6,8 @@ import {
   Me,
   MetaWithFacets,
   RequiredDeep,
+  Searchable,
+  Sortable,
 } from 'ordercloud-javascript-sdk'
 import { cacheProducts } from '../ocProductCache'
 import { createOcAsyncThunk, OcThrottle } from '../ocReduxHelpers'
@@ -19,6 +21,18 @@ export interface OcProductListOptions {
   depth?: string
   searchOn?: string[]
   sortBy?: string[]
+  filters?: Filters
+}
+
+export interface OcCategoryListOptions {
+  depth?: string
+  catalogID?: string
+  productID?: string
+  search?: string
+  searchOn?: Searchable<'Me.ListCategories'>
+  sortBy?: Sortable<'Me.ListCategories'>
+  page?: number
+  pageSize?: number
   filters?: Filters
 }
 

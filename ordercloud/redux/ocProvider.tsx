@@ -7,6 +7,7 @@ import { OcConfig, setConfig } from './ocConfig'
 import { retrieveOrder } from './ocCurrentOrder'
 import ocStore, { useOcDispatch, useOcSelector } from './ocStore'
 import { getUser } from './ocUser'
+import { listCategories, listCategoriesAssignment, listProducts } from './ocProductCache'
 
 interface OcProviderProps {
   config: OcConfig
@@ -14,11 +15,12 @@ interface OcProviderProps {
 
 const OcInitializer: FunctionComponent<OcProviderProps> = ({ children, config }) => {
   const dispatch = useOcDispatch()
-  const { ocConfig, ocAuth, ocUser, ocCurrentOrder } = useOcSelector((s) => ({
+  const { ocConfig, ocAuth, ocUser, ocCurrentOrder, ocProductCache } = useOcSelector((s) => ({
     ocConfig: s.ocConfig,
     ocAuth: s.ocAuth,
     ocUser: s.ocUser,
     ocCurrentOrder: s.ocCurrentOrder,
+    ocProductCache: s.ocProductCache,
   }))
 
   useEffect(() => {
@@ -38,8 +40,13 @@ const OcInitializer: FunctionComponent<OcProviderProps> = ({ children, config })
       if (!ocCurrentOrder.initialized) {
         dispatch(retrieveOrder())
       }
+      if (!ocProductCache.loading && ocProductCache?.categories?.ids?.length < 1) {
+        dispatch(listCategories({ catalogID: 'KTM_Catalog' }))
+        dispatch(listProducts({ catalogID: 'KTM_Catalog' }))
+        dispatch(listCategoriesAssignment('KTM_Catalog'))
+      }
     }
-  }, [dispatch, config, ocConfig, ocAuth, ocUser, ocCurrentOrder])
+  }, [dispatch, config, ocConfig, ocAuth, ocUser, ocCurrentOrder, ocProductCache])
 
   return <>{children}</>
 }

@@ -108,7 +108,7 @@ const OcProductDetail: FunctionComponent<OcProductDetailProps> = ({
   )
 
   return product ? (
-    <div className="md:grid grid-cols-12 my-8 container mx-auto">
+    <div className="md:grid grid-cols-12 pt-[108px] lg:pt-[85px] container mx-auto">
       <div className="imageWrapper mr-5 md:col-span-7">
         {product?.xp?.ImageUrl && (
           // <Image

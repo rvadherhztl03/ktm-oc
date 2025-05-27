@@ -39,7 +39,7 @@ const Layout: FunctionComponent = ({ children }) => {
 
       <div className={myFont.className}>
         <Header />
-        <main>{children}</main>
+        <main className="relative">{children}</main>
       </div>
     </>
   )

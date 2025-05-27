@@ -16,7 +16,7 @@ const ProductPage: FunctionComponent = () => {
   // }
 
   return (
-    <div className="productBackgroundWrapper relative">
+    <div className="productBackgroundWrapper ">
       <Head>
         <title>{productName}</title>
       </Head>

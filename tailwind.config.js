@@ -40,6 +40,7 @@ module.exports = {
       },
       boxShadow: {
         header: 'inset 0px 60px 20px -14px rgba(0, 0, 0, 0.8)',
+        productList: 'inset 0px 40px 80px -24px rgba(0, 0, 0, 0.2)',
       },
     },
     container: {

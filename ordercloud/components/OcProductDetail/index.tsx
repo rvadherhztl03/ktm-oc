@@ -136,7 +136,7 @@ const OcProductDetail: FunctionComponent<OcProductDetailProps> = ({ productId })
                 {/* Book Now Button */}
                 <Link
                   href={`${router.asPath}/booking`}
-                  className="w-full  block bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold text-xl py-6 px-8 rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl active:scale-95 uppercase tracking-wide"
+                  className="w-full  block bg-gradient-to-r from-primary to-red-400 text-white font-bold text-xl py-6 px-8 rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl active:scale-95 uppercase tracking-wide"
                 >
                   Book Now
                 </Link>

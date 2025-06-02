@@ -2,7 +2,7 @@ import useOcCurrentOrder from '../hooks/useOcCurrentOrder'
 import { useOcDispatch } from './ocStore'
 import { LineItemWithXp, OrderWorksheetWithXP } from './xp'
 import { createLineItem, updateLineItem } from './ocCurrentOrder'
-// import { LineItemSpec } from 'ordercloud-javascript-sdk'
+import { LineItemSpec } from 'ordercloud-javascript-sdk'
 
 interface CartResponse {
   payload?: {
@@ -57,12 +57,12 @@ const useOcCart = () => {
   const addToCart = async ({
     productId,
     quantity,
-    // specs,
+    specs,
     xp,
   }: {
     productId: string
     quantity: number
-    // specs: LineItemSpec[]
+    specs: LineItemSpec[]
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     xp: any
   }): Promise<CartResponse | null> => {
@@ -80,10 +80,10 @@ const useOcCart = () => {
             ...existingLineItem,
             Quantity: quantity + (existingLineItem?.Quantity ?? 0),
           }
-          const res = await dispatch(updateLineItem({ ...updatedLineItem, xp: xp }))
+          const res = await dispatch(updateLineItem({ ...updatedLineItem, Specs: specs, xp: xp }))
           internalRes = res as CartResponse
         } else {
-          const res = await dispatch(createLineItem({ ...lineItem, xp: xp }))
+          const res = await dispatch(createLineItem({ ...lineItem, Specs: specs, xp: xp }))
           internalRes = res as CartResponse
         }
         if (internalRes?.payload?.errorCode) {

@@ -1,122 +1,66 @@
-import Link from 'next/link'
+import { FunctionComponent } from 'react'
 import { LineItem } from 'ordercloud-javascript-sdk'
-import { FormEvent, FunctionComponent, useCallback, useMemo, useState } from 'react'
-import { useDispatch } from 'react-redux'
-import useOcProduct from '../../hooks/useOcProduct'
-import { removeLineItem, updateLineItem } from '../../redux/ocCurrentOrder'
-import OcQuantityInput from '../OcQuantityInput'
-import Image from 'next/image'
+import { Trash2 } from 'lucide-react'
+import ImageHelper from '../../../helper/Image'
+import Link from 'next/link'
 
 interface OcLineItemCardProps {
   lineItem: LineItem
   editable?: boolean
+  onQuantityChange?: (quantity: number) => void
+  onRemove?: () => void
 }
 
-const OcLineItemCard: FunctionComponent<OcLineItemCardProps> = ({ lineItem, editable }) => {
-  const dispatch = useDispatch()
-  const [disabled, setDisabled] = useState(false)
-  const [quantity, setQuantity] = useState(lineItem.Quantity)
-
-  const product = useOcProduct(lineItem.ProductID)
-
-  const handleRemoveLineItem = useCallback(async () => {
-    setDisabled(true)
-    await dispatch(removeLineItem(lineItem.ID))
-    setDisabled(false)
-  }, [dispatch, lineItem])
-
-  const handleUpdateLineItem = useCallback(
-    async (e: FormEvent) => {
-      e.preventDefault()
-      setDisabled(true)
-      await dispatch(updateLineItem({ ...lineItem, Quantity: quantity }))
-      setDisabled(false)
-    },
-    [dispatch, quantity, lineItem]
-  )
-
-  const isUpdateDisabled = useMemo(() => {
-    return disabled || lineItem.Quantity === quantity
-  }, [lineItem, disabled, quantity])
-
+const OcLineItemCard: FunctionComponent<OcLineItemCardProps> = ({
+  lineItem,
+  editable,
+  onRemove,
+}) => {
   return (
-    <div className="cartWrapper">
-      <div className="productTitle flex justify-between items-base">
-        <p className="">
-          {lineItem.Product.Name}
-          {lineItem.Specs.map((s) => (
-            <span key={s.SpecID}>
-              <br />
-              {`${s.Name}: ${s.Value}`}
-            </span>
-          ))}
-        </p>
-        <div className="ctaActionWrapper flex gap-4">
-          {editable && (
-            <Link href={`/products/${lineItem.ProductID}?lineitem=${lineItem.ID}`}>
-              <a
-                aria-label="Edit Line Item"
-                className="py-2 px-8 rounded-3xl text-[#322b54] bg-[#47bcc8]"
-              >
-                Edit
-              </a>
-            </Link>
-          )}
+    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300">
+      <Link href={`/bikes/DjYPUqLT0EqPOFLo19zlrA/${lineItem.Product?.ID}`}>
+        <div className="relative h-32 w-32 sm:h-24 sm:w-24 flex-shrink-0">
+          <ImageHelper
+            url={lineItem.Product?.xp?.Images?.[0]?.Url || '/images/placeholder.jpg'}
+            alt={lineItem.Product?.Name || 'Product image'}
+            className="object-cover rounded-lg w-full h-full"
+          />
+        </div>
+      </Link>
+
+      <div className="flex-grow w-full">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h3 className="text-lg font-semibold text-gray-800 mb-1 line-clamp-2">
+              {lineItem.Product?.Name}
+            </h3>
+            <p className="text-gray-500 text-sm mb-2 line-clamp-2">
+              {lineItem.Product?.Description}
+            </p>
+          </div>
+          <div className="text-primary font-bold text-xl">₹{1999}</div>
+        </div>
+
+        <div className="flex items-center justify-between mt-4">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <span className="text-gray-600">Quantity:</span>
+              <div className="px-3 py-1.5 bg-gray-50 rounded-md text-gray-700 font-medium">
+                {lineItem.Quantity}
+              </div>
+            </div>
+          </div>
 
           {editable && (
             <button
-              aria-label="Remove Line Item"
-              type="button"
-              disabled={disabled}
-              onClick={handleRemoveLineItem}
-              className="py-2 px-8 rounded-3xl text-[#322b54] bg-[#ffa9a9]"
+              onClick={onRemove}
+              className="p-2 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-all duration-200"
+              aria-label="Remove item"
             >
-              Remove
+              <Trash2 className="w-5 h-5" />
             </button>
           )}
         </div>
-      </div>
-
-      <div className="productDetails md:flex md:justify-start">
-        <div className="imgWrapper md:mr-4 md:w-1/4">
-          {product?.xp?.ImageUrl && (
-            <Image
-              alt={product?.Name}
-              src={product?.xp?.ImageUrl}
-              width={150}
-              height={150}
-              className="object-cover"
-            />
-          )}
-        </div>
-
-        {editable ? (
-          <>
-            {product && (
-              <form onSubmit={handleUpdateLineItem} className="w-full">
-                <div className="h-full flex justify-between items-baseline md:items-center md:flex-auto mx-2">
-                  <OcQuantityInput
-                    controlId={`${lineItem.ID}_quantity`}
-                    quantity={quantity}
-                    disabled={disabled}
-                    onChange={setQuantity}
-                    priceSchedule={product.PriceSchedule}
-                  />
-                  <button
-                    type="submit"
-                    aria-label="Update Line Item Quantity"
-                    disabled={isUpdateDisabled}
-                    className="py-2 px-8 rounded-3xl text-[#322b54] bg-[#47bcc8]"
-                  >
-                    Update
-                  </button>
-                </div>
-              </form>
-            )}
-          </>
-        ) : (
-          <p>{`Quantity: ${lineItem.Quantity}`}</p>
-        )}
       </div>
     </div>
   )

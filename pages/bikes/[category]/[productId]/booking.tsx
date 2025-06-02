@@ -2,7 +2,6 @@
 import { useRouter } from 'next/router'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
-import { User, Phone, MapPin, Store, Calendar } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Me } from 'ordercloud-javascript-sdk'
@@ -17,80 +16,61 @@ const validationSchema = Yup.object({
   mobile: Yup.string()
     .matches(/^[0-9]{10}$/, 'Mobile number must be 10 digits')
     .required('Mobile number is required'),
+  email: Yup.string().email().required('Email is required'),
   location: Yup.string().required('Location is required'),
   dealer: Yup.string().required('Please select a dealer'),
-  buyingPlan: Yup.string().required('Please select when you plan to buy'),
 })
 
 export default function ProductBookingPage() {
   const router = useRouter()
   const { productId } = router.query
-  const { product } = useOcProductDetail(productId as string)
+  const { product, specs } = useOcProductDetail(productId as string)
   const [isBooked, setIsBooked] = useState(false)
   const { addToCart } = useOcCart()
   const [variants, setVariants] = useState(null)
-  const [selectedModel, setSelectedModel] = useState('')
   const [selectedColor, setSelectedColor] = useState('')
   const [currentImage, setCurrentImage] = useState('')
+  const [dealers, setDealers] = useState<string[]>([''])
 
   useEffect(() => {
     const getVariants = async () => {
       const res = await Me.ListVariants(product?.ID)
       setVariants(res?.Items)
-
-      // Set first variant as default if available
-      if (res?.Items?.[0]?.xp?.Models?.[0]) {
-        const firstModel = Object.keys(res.Items[0].xp.Models[0])[0]
-        setSelectedModel(firstModel)
-        const firstColor = res.Items[0].xp.Models[0][firstModel][0].colors[0]
-        setSelectedColor(firstColor.color)
-        setCurrentImage(firstColor.Image)
-      }
     }
     if (product?.ID) getVariants()
   }, [product?.ID])
 
   useEffect(() => {
-    if (selectedModel && variants?.[0]?.xp?.Models) {
-      const modelData = variants[0].xp.Models.find(
-        (model) => Object.keys(model)[0] === selectedModel
-      )
-      if (modelData) {
-        const colors = modelData[selectedModel][0].colors
-        if (colors && colors.length > 0) {
-          setSelectedColor(colors[0].color)
-          setCurrentImage(colors[0].Image)
-        }
-      }
+    // Set first color from specs as default if available
+    if (specs?.[0]?.Options?.[0]) {
+      const firstColor = specs[0].Options[0]
+      setSelectedColor(firstColor.Value)
+      setCurrentImage(firstColor.xp?.Images?.[0]?.Url)
     }
-  }, [selectedModel, variants])
+  }, [specs])
 
-  const handleModelChange = (e) => {
-    setSelectedModel(e.target.value)
-  }
-
-  const handleColorChange = (color, image) => {
-    setSelectedColor(color)
-    setCurrentImage(image)
+  const handleColorChange = (colorData) => {
+    setSelectedColor(colorData.Value)
+    setCurrentImage(colorData.xp?.Images?.[0]?.Url)
   }
 
   // Mock data - replace with your actual data
-  const dealers = [
-    'Authorized Dealer 1',
-    'Authorized Dealer 2',
-    'Authorized Dealer 3',
-    'Authorized Dealer 4',
-  ]
-
-  const buyingOptions = ['Within 1 month', 'Within 3 months', 'Within 6 months', 'Just exploring']
+  useEffect(() => {
+    const getDealers = async () => {
+      const res = await Me.ListBuyerSellers()
+      setDealers(res?.Items?.map((x) => x?.Name))
+    }
+    if (product?.ID) getDealers()
+  }, [product?.ID])
 
   const handleSubmit = async (values, { setSubmitting }) => {
+    localStorage.setItem('userEmail', values.email)
+    setSubmitting(true)
     try {
-      // console.log('Form submitted:', values)
-      const xp = { ...values, selectedModel: selectedModel, selectedColor: selectedColor }
-      await addToCart({ productId: product?.ID, quantity: 1, xp })
-
+      const xp = { ...values, selectedColor: selectedColor }
+      await addToCart({ productId: product?.ID, quantity: 1, specs: variants?.[0]?.Specs, xp: xp })
       router.push(`/checkout`)
+      // router.push(`/checkout`)
     } catch (error) {
       console.error('Submission error:', error)
     } finally {
@@ -101,92 +81,85 @@ export default function ProductBookingPage() {
   if (!product) return null
 
   return (
-    <div className="mx-auto p-4">
+    <div className="mx-auto min-h-screen">
       {/* Header and Product Image Section */}
-      <div className="flex flex-col lg:flex-row gap-8 justify-between">
+      <div className="flex flex-col lg:flex-row  justify-between h-full relative">
         {/* Product Image */}
-        <div className="flex flex-col justify-center items-center w-full gap-10">
-          <h2 className="text-2xl font-bold">{product?.Name}</h2>
-          <ImageHelper url={currentImage} className="max-w-[600px]" />
+        <div className="pt-[90px] h-full flex flex-col  items-center w-full gap-10 bg-[#f7f7f7] w-full lg:min-h-screen">
+          <h2 className="text-3xl font-bold">{product?.Name}</h2>
+          <ImageHelper url={currentImage} className="max-w-[600px] h-auto" />
         </div>
 
         {/* Right Column Section - Conditionally Rendered */}
-        <div className="space-y-6 w-full">
+        <div className="pt-[90px] space-y-6 w-full lg:w-1/2">
           {!isBooked ? (
             <>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-700">SELECT MODEL</h3>
-                <select
-                  className="w-full p-2 border rounded-md"
-                  value={selectedModel}
-                  onChange={handleModelChange}
-                >
-                  {variants?.[0]?.xp?.Models &&
-                    variants?.[0]?.xp?.Models?.map((model) => Object.keys(model))
-                      .flat()
-                      ?.map((x) => (
-                        <option key={x} value={x}>
-                          {x}
-                        </option>
-                      ))}
-                </select>
-              </div>
-
-              <div>
-                <h3 className="text-lg font-semibold text-gray-700">SELECT COLOR</h3>
-                <div className="flex items-center gap-4">
-                  {selectedModel &&
-                    variants?.[0]?.xp?.Models &&
-                    variants[0].xp.Models.find(
-                      (model) => Object.keys(model)[0] === selectedModel
-                    )?.[selectedModel][0].colors.map((colorData, index) => (
+              <div className="px-8">
+                <div>
+                  <h3 className="text-2xl font-semibold text-gray-700">SELECT COLOR</h3>
+                  <div className="flex items-center gap-4">
+                    {specs?.[0]?.Options?.map((colorData, index) => (
                       <div
                         key={index}
-                        className={`w-8 h-8 rounded-full border-2 cursor-pointer ${
-                          selectedColor === colorData.color
-                            ? 'border-blue-500'
-                            : 'border-transparent'
+                        className={`w-10 h-10 rounded-full flex justify-center items-center border-2  cursor-pointer ${
+                          selectedColor === colorData.Value
+                            ? 'border-primary' // Highlight with blue border when selected
+                            : 'border-gray-500'
                         }`}
-                        style={{ backgroundColor: colorData.color }}
-                        onClick={() => handleColorChange(colorData.color, colorData.Image)}
-                      />
+                        style={{ backgroundColor: colorData.xp?.hexcode }}
+                        onClick={() => handleColorChange(colorData)}
+                      >
+                        {selectedColor === colorData.Value && (
+                          <svg
+                            className="h-6 w-6 text-white"
+                            fill="none"
+                            viewBox=" 22 22"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
+                      </div>
                     ))}
+                  </div>
+                  {selectedColor && <p className="text-sm text-gray-600 mt-2">{selectedColor}</p>}
+                </div>
+
+                {/* Pure Facts Section */}
+                <div className="mt-5">
+                  <h3 className="text-lg font-semibold text-gray-700">Pure Facts</h3>
+                  <ul className="list-disc list-inside text-gray-600 text-sm space-y-1">
+                    {product?.xp?.Facts?.map((x) => (
+                      <li key={x}>{x}</li>
+                    ))}
+                  </ul>
                 </div>
               </div>
 
-              {/* Top Features Section */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-700">TOP FEATURES</h3>
-                <ul className="list-disc list-inside text-gray-600 text-sm space-y-1">
-                  {product?.xp?.Bullets?.map((x) => (
-                    <li key={x}>{x}</li>
-                  ))}
-                </ul>
-              </div>
-
               {/* Booking Details and Price Section */}
-              <div className="mt-8 animate-slide-up">
+              <div className="lg:fixed lg:right-0 lg:bottom-0 lg:w-1/3 animate-slide-up ">
                 <div className="bg-white p-4 shadow-lg rounded-lg flex flex-col lg:flex-row items-center justify-between gap-4">
-                  <div className="text-xl font-bold text-gray-800">
+                  <div className="text-xl font-bold text-gray-800 flex flex-col">
+                    <p className="text-sm font-normal text-gray-600">*Ex-showroom price - </p>
                     {formatPrice(product?.PriceSchedule?.PriceBreaks?.[0]?.Price)}
-                    <p className="text-sm font-normal text-gray-600">
-                      *Ex-showroom price -{' '}
-                      <span className="text-blue-600 cursor-pointer">New Delhi</span>{' '}
-                      <span className="text-blue-600 cursor-pointer">Change City</span>
-                    </p>
+                    <span className="text-primary cursor-pointer">New Delhi</span>{' '}
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setIsBooked(true)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-md transition-colors duration-200"
-                  >
-                    BOOK NOW @ ₹ 2000
-                  </button>
+                  <div className="flex flex-col">
+                    <button
+                      type="button"
+                      onClick={() => setIsBooked(true)}
+                      className="bg-primary text-white font-bold py-3 px-8 rounded-md transition-colors duration-200"
+                    >
+                      BOOK NOW @ ₹ 1999
+                    </button>
+                    <p className="text-green-700 font-bold text-center">Fully Refundable</p>
+                  </div>
                 </div>
               </div>
             </>
           ) : (
-            <>
+            <div className="px-4">
               <h2 className="text-2xl font-bold">FILL YOUR DETAILS BELOW</h2>
               <Formik
                 initialValues={{
@@ -194,27 +167,24 @@ export default function ProductBookingPage() {
                   mobile: '',
                   location: '',
                   dealer: '',
-                  buyingPlan: '',
+                  email: '',
                 }}
                 validationSchema={validationSchema}
                 onSubmit={handleSubmit}
               >
                 {({ isSubmitting }) => (
-                  <Form className="space-y-6">
+                  <Form className="pb-6 mt-10 lg:w-2/3  ">
                     {/* Name Input */}
-                    <div>
-                      <label htmlFor="name" className="sr-only text-sm">
+                    <div className="mt-3">
+                      <label htmlFor="name" className="text-md font-bold">
                         Enter name
                       </label>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <User className="h-5 w-5 text-blue-600" />
-                        </div>
+                      <div className="relative mt-2">
                         <Field
                           type="text"
                           id="name"
                           name="name"
-                          className="w-full text-sm p-2 pl-10 border-0 border-b-2 border-gray-300 focus:border-blue-600 focus:ring-0 rounded-none"
+                          className="w-full text-sm p-2 py-3 pl-4 border-0 border-[1px] border-black  focus:ring-0 rounded-none"
                           placeholder="Enter name"
                         />
                       </div>
@@ -226,19 +196,16 @@ export default function ProductBookingPage() {
                     </div>
 
                     {/* Mobile Number Input */}
-                    <div>
-                      <label htmlFor="mobile" className="sr-only">
+                    <div className="mt-3">
+                      <label htmlFor="mobile" className="text-md font-bold">
                         Enter mobile number
                       </label>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <Phone className="h-5 w-5 text-blue-600" />
-                        </div>
+                      <div className="relative mt-2">
                         <Field
-                          type="text"
+                          type="number"
                           id="mobile"
                           name="mobile"
-                          className="w-full text-sm p-2 pl-10 border-0 border-b-2 border-gray-300 focus:border-blue-600 focus:ring-0 rounded-none"
+                          className="w-full text-sm p-2 py-3 pl-4 border-0 border-[1px] border-black  focus:ring-0 rounded-none"
                           placeholder="Enter mobile number"
                         />
                       </div>
@@ -249,28 +216,40 @@ export default function ProductBookingPage() {
                       />
                     </div>
 
+                    {/* Email Input */}
+                    <div className="mt-3">
+                      <label htmlFor="mobile" className="text-md font-bold">
+                        Enter email address
+                      </label>
+                      <div className="relative mt-2">
+                        <Field
+                          type="email"
+                          id="email"
+                          name="email"
+                          className="w-full text-sm p-2 py-3 pl-4 border-0 border-[1px] border-black  focus:ring-0 rounded-none"
+                          placeholder="Enter email address"
+                        />
+                      </div>
+                      <ErrorMessage
+                        name="email"
+                        component="div"
+                        className="text-red-500 text-sm mt-1"
+                      />
+                    </div>
+
                     {/* Location Input */}
-                    <div>
-                      <label htmlFor="location" className="sr-only">
+                    <div className="mt-3">
+                      <label htmlFor="location" className="text-md font-bold">
                         Enter Area "e.g. Andheri"
                       </label>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <MapPin className="h-5 w-5 text-blue-600" />
-                        </div>
+                      <div className="relative mt-2">
                         <Field
                           type="text"
                           id="location"
                           name="location"
-                          className="w-full text-sm p-2 pl-10 border-0 border-b-2 border-gray-300 focus:border-blue-600 focus:ring-0 rounded-none pr-24"
+                          className="w-full text-sm p-2 py-3 pl-4 border-0 border-[1px] border-black  focus:ring-0 rounded-none pr-24"
                           placeholder='Enter Area "e.g. Andheri"'
                         />
-                        <button
-                          type="button"
-                          className="absolute inset-y-0 right-0 pr-3 flex items-center text-blue-600 hover:underline"
-                        >
-                          Detect
-                        </button>
                       </div>
                       <ErrorMessage
                         name="location"
@@ -280,19 +259,16 @@ export default function ProductBookingPage() {
                     </div>
 
                     {/* Dealer Select */}
-                    <div>
-                      <label htmlFor="dealer" className="sr-only">
+                    <div className="mt-3">
+                      <label htmlFor="dealer" className="text-md font-bold">
                         Select Dealer
                       </label>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <Store className="h-5 w-5 text-blue-600" />
-                        </div>
+                      <div className="relative mt-2">
                         <Field
                           as="select"
                           id="dealer"
                           name="dealer"
-                          className="w-full text-sm p-2 pl-10 border-0 border-b-2 border-gray-300 focus:border-blue-600 focus:ring-0 rounded-none"
+                          className="w-full text-sm pr-4 py-3 pl-4 border-0 border-[1px] border-black  focus:ring-0 rounded-none"
                         >
                           <option value="">Select Dealer</option>
                           {dealers.map((dealer, index) => (
@@ -309,41 +285,11 @@ export default function ProductBookingPage() {
                       />
                     </div>
 
-                    {/* Buying Plan Select */}
-                    <div>
-                      <label htmlFor="buyingPlan" className="sr-only">
-                        Select When you plan to buy
-                      </label>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <Calendar className="h-5 w-5 text-blue-600" />
-                        </div>
-                        <Field
-                          as="select"
-                          id="buyingPlan"
-                          name="buyingPlan"
-                          className="w-full text-sm p-2 pl-10 border-0 border-b-2 border-gray-300 focus:border-blue-600 focus:ring-0 rounded-none"
-                        >
-                          <option value="">Select When you plan to buy</option>
-                          {buyingOptions.map((option, index) => (
-                            <option key={index} value={option}>
-                              {option}
-                            </option>
-                          ))}
-                        </Field>
-                      </div>
-                      <ErrorMessage
-                        name="buyingPlan"
-                        component="div"
-                        className="text-red-500 text-sm mt-1"
-                      />
-                    </div>
-
                     {/* Verify and Pay Button */}
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-md transition-colors duration-200 disabled:bg-gray-400"
+                      className="w-full bg-primary my-6 text-white font-bold py-3 rounded-md transition-colors duration-200 disabled:bg-gray-400"
                     >
                       {isSubmitting ? 'PROCESSING...' : 'VERIFY AND PAY'}
                     </button>
@@ -351,18 +297,18 @@ export default function ProductBookingPage() {
                     {/* T&C and Privacy Policy */}
                     <p className="text-center text-sm text-gray-600">
                       By clicking on Verify and Pay, you agree to our{' '}
-                      <Link href="#" className="text-blue-600 hover:underline">
+                      <Link href="#" className="text-primary hover:underline">
                         T&C
                       </Link>{' '}
                       and{' '}
-                      <Link href="#" className="text-blue-600 hover:underline">
+                      <Link href="#" className="text-primary hover:underline">
                         Privacy Policy
                       </Link>
                     </p>
                   </Form>
                 )}
               </Formik>
-            </>
+            </div>
           )}
         </div>
       </div>

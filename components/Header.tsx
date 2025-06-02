@@ -1,10 +1,11 @@
 import Link from 'next/link'
 import React, { useState, useEffect } from 'react'
 import ImageHelper from '../helper/Image'
-import { ChevronLeft, Menu, X } from 'lucide-react'
+import { ChevronLeft, Menu, ShoppingCart, User, X } from 'lucide-react'
 import { useOcSelector } from '../ordercloud/redux/ocStore'
 import { BuyerProduct, Category, RequiredDeep } from 'ordercloud-javascript-sdk'
 import { ICategoryProductAssignment } from '../types/ordercloud/ICategoryProductAssignment'
+import useOcCart from '../ordercloud/redux/useOcCart'
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -30,6 +31,9 @@ const Header = () => {
       products: productsList,
     }
   })
+  const { getProductLineItems } = useOcCart()
+  const cartItems = getProductLineItems()
+  const cartItemCount = cartItems?.length || 0
   const { categoriesProductAssignment } = useOcSelector((s) => {
     const entities = s.ocProductCache?.categoriesProductAssignment.entities || {}
     const ids = s.ocProductCache.categoriesProductAssignment.ids || []
@@ -85,31 +89,50 @@ const Header = () => {
                 url="https://cdn.bajajauto.com/images/ktm/header/ktm-logo.png"
                 alt="home page"
                 className="block w-[95px] lg:w-auto"
+                pictureClasses="w-[85px]"
               />
             </div>
           </Link>
-          <div className="hidden lg:flex items-center">
-            <button
-              onClick={() => setIsModelsMenuOpen(!isModelsMenuOpen)}
-              className="flex items-center"
-            >
-              <Link href={'#'}>{'Models'}</Link>
-              <ChevronLeft
-                className={`-rotate-90 text-[#f60] transition-transform duration-300 ${
-                  isModelsMenuOpen ? 'rotate-90' : ''
-                }`}
-              />
-            </button>
-          </div>
         </div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden lg:flex gap-4">
+        <nav className="hidden lg:flex items-start gap-4 w-full text-md">
+          <button
+            onClick={() => setIsModelsMenuOpen(!isModelsMenuOpen)}
+            className="flex items-center uppercase"
+          >
+            {'Models'}
+            <ChevronLeft
+              className={`-rotate-90 text-[#f60] transition-transform duration-300 ${
+                isModelsMenuOpen ? 'rotate-90' : ''
+              }`}
+            />
+          </button>
+
           {navLinks?.map((link, index) => (
             <Link key={index} href={link.href} className="hover:text-[#f60] transition-colors">
               {link.label}
             </Link>
           ))}
+          <Link
+            href={'/myOrders'}
+            className="relative ml-auto py-2 px-6 flex gap-2 w-fit font-semibold text-white"
+          >
+            <User size={24} />
+            <span className="w-fit whitespace-nowrap">My Orders</span>
+          </Link>
+          <Link
+            href={'/cart'}
+            className="flex-end flex relative gap-2 p-2 text-white hover:bg-white/10 rounded-full"
+          >
+            <ShoppingCart size={24} />
+            <span className="w-fit whitespace-nowrap">Cart</span>
+            {cartItemCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {cartItemCount}
+              </span>
+            )}
+          </Link>
         </nav>
 
         {/* Mobile Menu Button */}
@@ -128,6 +151,7 @@ const Header = () => {
         >
           <div className="container mx-auto p-8">
             {/* Close Button */}
+
             <div className="flex justify-end">
               <button onClick={() => setIsModelsMenuOpen(false)}>
                 <X size={24} className="text-gray-700" />
@@ -187,28 +211,48 @@ const Header = () => {
       </div>
       {/* Mobile Navigation */}
       <div
-        className={`fixed text-white lg:hidden z-50 top-0 right-0 h-full w-full bg-black bg-opacity-95 transform transition-transform duration-300 ease-in-out lg:hidden ${
+        className={`fixed text-white lg:hidden  text-lg z-50 top-0 right-0 h-full w-full bg-black  transform transition-transform duration-300 ease-in-out lg:hidden ${
           isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
         <div className="flex flex-col h-full">
           <div className="flex justify-end py-8 px-4">
+            <div className="flex justify-start ">
+              <Link
+                href={'/myOrders'}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="relative  py-2 px-6 flex gap-2 w-fit  font-semibold text-white   transition"
+              >
+                <User size={24} />
+                <span className="w-fit whitespace-nowrap">My Orders</span>
+              </Link>
+              <Link
+                href={'/cart'}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="w-full flex items-center justify-center gap-2 py-2 px-6  transition"
+              >
+                <ShoppingCart size={20} />
+                <span>Cart ({cartItemCount})</span>
+              </Link>
+            </div>
             <button className="text-white" onClick={() => setIsMobileMenuOpen(false)}>
               <X size={34} />
             </button>
           </div>
           <nav className="flex flex-col p-4">
-            <div className="flex items-center mb-4">
-              <Link href={'#'} className="mr-2">
-                {'Models'}
-              </Link>
-              <ChevronLeft className="-rotate-90 text-[#f60]" />
-            </div>
+            <Link
+              href={'/bikes'}
+              className="transition-colors  border-b border-gray-800"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              {'Models'}
+            </Link>
+
             {navLinks?.map((link, index) => (
               <Link
                 key={index}
                 href={link.href}
-                className="py-3 hover:text-[#f60] transition-colors border-b border-gray-800"
+                className="py-3  transition-colors border-b border-gray-800"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 {link.label}

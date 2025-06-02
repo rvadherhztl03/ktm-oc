@@ -58,7 +58,7 @@ const ProductCard: FunctionComponent<ProductCardProps> = ({ product }) => {
             Explore
           </Link>
           <Link
-            href={`/booking`}
+            href={`/bikes/DjYPUqLT0EqPOFLo19zlrA/${product?.ID}/booking`}
             className="py-1 w-full uppercase  text-white bg-primary text-lg font-bold flex items-center justify-center"
           >
             Book Now

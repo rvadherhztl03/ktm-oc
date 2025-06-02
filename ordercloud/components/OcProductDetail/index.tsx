@@ -1,13 +1,11 @@
-import { Spec } from 'ordercloud-javascript-sdk'
-import { FormEvent, FunctionComponent, useCallback, useEffect, useState } from 'react'
+import { FunctionComponent, useEffect, useState } from 'react'
 import useOcProductDetail from '../../hooks/useOcProductDetail'
-import { createLineItem, updateLineItem } from '../../redux/ocCurrentOrder'
-import { useOcDispatch, useOcSelector } from '../../redux/ocStore'
-import formatPrice from '../../utils/formatPrice'
-import OcQuantityInput from '../OcQuantityInput'
-import OcProductSpecField from './OcProductSpecField'
-import Image from 'next/image'
+import ImageHelper from '../../../helper/Image'
+import OcProductSpecifications from '../OcProductSpecifications'
+import FinanceOffers from '../../../components/FinanaceOffer'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
+// import { useRouter } from 'next/router'
 
 interface OcProductDetailProps {
   productId: string
@@ -16,158 +14,155 @@ interface OcProductDetailProps {
   onLineItemUpdated?: () => void
 }
 
-const determineDefaultOptionId = (spec: Spec) => {
-  if (spec.DefaultOptionID) return spec.DefaultOptionID
-  return spec.OptionCount ? spec.Options[0].ID : undefined
+interface ColorOption {
+  ID: string
+  Value: string
+  ListOrder: number
+  IsOpenText: boolean
+  PriceMarkupType: string
+  PriceMarkup: null
+  xp: {
+    Images: Array<{
+      Url: string
+    }>
+    hexcode: string
+  }
 }
 
-const OcProductDetail: FunctionComponent<OcProductDetailProps> = ({
-  productId,
-  lineItemId,
-  onLineItemAdded,
-  onLineItemUpdated,
-}) => {
-  const dispatch = useOcDispatch()
+const OcProductDetail: FunctionComponent<OcProductDetailProps> = ({ productId }) => {
   const { product, specs } = useOcProductDetail(productId)
-  const [loading, setLoading] = useState(false)
-
   const router = useRouter()
-
-  const [specValues, setSpecValues] = useState([])
-
-  const lineItem = useOcSelector((s) =>
-    lineItemId && s.ocCurrentOrder.lineItems
-      ? s.ocCurrentOrder.lineItems.find((li) => li.ID === lineItemId)
-      : undefined
+  const [selectedColor, setSelectedColor] = useState<ColorOption>(
+    specs && (specs?.[0].Options?.[0] as ColorOption)
   )
 
   useEffect(() => {
-    if (lineItem) {
-      setSpecValues(lineItem.Specs)
-    } else if (specs) {
-      setSpecValues(
-        specs.map((s) => {
-          return {
-            SpecID: s.ID,
-            OptionID: determineDefaultOptionId(s),
-            Value: s.DefaultValue ? s.DefaultValue : undefined,
-          }
-        })
-      )
+    if (!selectedColor) {
+      setSelectedColor(specs?.[0].Options?.[0] as ColorOption)
     }
-  }, [specs, lineItem])
+  }, [specs])
 
-  const [quantity, setQuantity] = useState(
-    lineItem ? lineItem.Quantity : (product && product.PriceSchedule?.MinQuantity) || 1
-  )
-
-  const handleSpecFieldChange = (values: { SpecID: string; OptionID?: string; Value?: string }) => {
-    setSpecValues((sv) =>
-      sv.map((s) => {
-        if (s.SpecID === values.SpecID) {
-          return {
-            SpecID: values.SpecID,
-            OptionID: values.OptionID === 'OpenText' ? undefined : values.OptionID,
-            Value: values.Value,
-          }
-        }
-        return s
-      })
-    )
+  const handleColorChange = (color: ColorOption) => {
+    setSelectedColor(color)
   }
+  console.log('@@specs', specs)
 
-  const handleAddToCart = useCallback(
-    async (e: FormEvent) => {
-      e.preventDefault()
-      setLoading(true)
-      await dispatch(
-        createLineItem({ ProductID: product.ID, Quantity: quantity, Specs: specValues })
-      )
-      setLoading(false)
-      if (onLineItemAdded) {
-        onLineItemAdded()
-      }
-      router.push('/cart')
-    },
-    [dispatch, product, quantity, onLineItemAdded, specValues]
-  )
+  // const router = useRouter()
 
-  const handleUpdateCart = useCallback(
-    async (e: FormEvent) => {
-      e.preventDefault()
-      setLoading(true)
-      await dispatch(updateLineItem({ ...lineItem, Quantity: quantity, Specs: specValues }))
-      setLoading(false)
-      if (onLineItemUpdated) {
-        onLineItemUpdated()
-      }
+  return product && specs ? (
+    <div className="">
+      <ImageHelper
+        url={product?.xp?.AdditionalImages?.[0]?.BackgroundImage}
+        pictureClasses="h-[400px] lg:h-auto"
+        className="h-full object-cover"
+      />
+      {specs && (
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-8">
+          <div className="max-w-7xl mx-auto">
+            {/* Header */}
+            <div className="text-center mb-12">
+              <h1 className="text-4xl md:text-6xl font-black text-gray-800 mb-4 tracking-wide">
+                CHECK ON ROAD PRICE
+              </h1>
+              <p className="text-xl text-gray-600 font-medium">{product.Name}</p>
+            </div>
 
-      router.push('/cart')
-    },
-    [dispatch, lineItem, quantity, onLineItemUpdated, specValues]
-  )
+            {/* Main Content */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              {/* Bike Image Section */}
+              <div className="relative">
+                <div className="bg-white rounded-3xl shadow-2xl p-8 transform hover:scale-105 transition-transform duration-500">
+                  <div className="relative h-96 md:h-[400px]">
+                    <ImageHelper url={selectedColor?.xp?.Images[0].Url} />
+                  </div>
+                </div>
+              </div>
 
-  return product ? (
-    <div className="md:grid grid-cols-12 pt-[85px] container mx-auto">
-      <div className="imageWrapper mr-5 md:col-span-7">
-        {product?.xp?.ImageUrl && (
-          // <Image
-          //   src={product?.xp?.ImageUrl}
-          //   width={1000}
-          //   height={650}
-          //   layout="responsive"
-          //   className="object-cover"
-          // />
-          <Image
-            alt={product?.Name}
-            src="/images/b1.webp"
-            width={1000}
-            height={650}
-            layout="responsive"
-            className="object-cover"
-          />
-        )}
-      </div>
+              {/* Details Section */}
+              <div className="space-y-8">
+                <div>
+                  <h2 className="text-5xl md:text-6xl font-black text-gray-800 mb-6 tracking-tight">
+                    {product.Name}
+                  </h2>
+                </div>
 
-      <div className="specWrapper md:col-span-5 p-3 z-20">
-        <h2 className="text-[#0f172a] text-2xl lg:text-6xl pb-4 lg:pb-8 ">{product.Name}</h2>
+                {/* Color Selection */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-700">Choose Color</h3>
 
-        <p className="text-2xl pb-4 lg:pb-8">
-          {formatPrice(product.PriceSchedule?.PriceBreaks[0].Price)}
-        </p>
-        <p className="" dangerouslySetInnerHTML={{ __html: product.Description }} />
+                  <div className="flex items-center space-x-4">
+                    {specs?.[0].Options.map((color) => (
+                      <button
+                        key={color.ID}
+                        onClick={() => handleColorChange(color as ColorOption)}
+                        className={`w-12 h-12 rounded-full border-4 transition-all duration-300 hover:scale-110 ${
+                          selectedColor?.ID === color?.ID
+                            ? 'border-blue-500 scale-110 shadow-lg'
+                            : 'border-gray-300 hover:border-gray-400'
+                        }`}
+                        style={{ backgroundColor: color.xp.hexcode }}
+                        aria-label={`Select ${color.Value} color`}
+                      />
+                    ))}
+                  </div>
 
-        {/* Quantyity and Add to Cart: */}
-        <form onSubmit={lineItem ? handleUpdateCart : handleAddToCart}>
-          {specs &&
-            specs.map((s) => {
-              const specValue = specValues.find((sv) => sv.SpecID === s.ID)
-              return (
-                <OcProductSpecField
-                  key={s.ID}
-                  spec={s}
-                  onChange={handleSpecFieldChange}
-                  optionId={specValue && specValue.OptionID}
-                  value={specValue && specValue.Value}
+                  <p className="text-lg font-medium text-gray-600">{selectedColor?.Value}</p>
+                </div>
+
+                {/* Price Section */}
+                <div className="relative overflow-hidden">
+                  <div
+                    className="rounded-2xl p-8 text-white relative"
+                    style={{
+                      background: `linear-gradient(135deg, ${selectedColor?.xp?.hexcode}, ${selectedColor?.xp?.hexcode}dd)`,
+                    }}
+                  >
+                    <div className="relative z-10">
+                      <p className="text-lg font-medium opacity-90 mb-2">Starting from</p>
+                      <p className="text-4xl md:text-5xl font-black mb-2">
+                        ₹ {product?.PriceSchedule?.PriceBreaks?.[0]?.Price}/-*
+                      </p>
+                      <p className="text-base opacity-80">Ex-showroom price in Delhi</p>
+                    </div>
+
+                    {/* Animated background effect */}
+                    <div className="absolute inset-0 opacity-10">
+                      <div className="absolute top-0 -right-4 w-24 h-24 bg-white rounded-full animate-pulse"></div>
+                      <div className="absolute bottom-0 -left-4 w-16 h-16 bg-white rounded-full animate-pulse delay-1000"></div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Book Now Button */}
+                <Link
+                  href={`${router.asPath}/booking`}
+                  className="w-full  block bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold text-xl py-6 px-8 rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl active:scale-95 uppercase tracking-wide"
+                >
+                  Book Now
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      <FinanceOffers />
+      <OcProductSpecifications product={product} />
+      {product?.xp?.ImageGallery && product?.xp?.ImageGallery.length > 0 && (
+        <div className="imageGallery flex flex-col  bg-[#d9d9d9] pt-10 pl-10 pb-[60px]">
+          <h2 className="text-2xl lg:text-[32px] font-bold">{product?.Name} Gallery</h2>
+          <div className="mt-8 flex space-x-4 w-full overflow-x-scroll">
+            {product.xp.ImageGallery.map((image, index: number) => (
+              <div key={index} className="w-[300px] lg:w-[400px]">
+                <ImageHelper
+                  url={image}
+                  className="w-full h-auto"
+                  pictureClasses="w-[300px] lg:w-[300px]"
                 />
-              )
-            })}
-          <OcQuantityInput
-            controlId="addToCart"
-            priceSchedule={product.PriceSchedule}
-            quantity={quantity}
-            onChange={setQuantity}
-          />
-
-          <button
-            className=" px-12 py-3 w-full md:w-3/5 mt-8 py-2 px-8 rounded-3xl text-[#322b54] bg-[#47bcc8] shadow-lg hover:shadow-stone-500 focus:shadow-stone-500 transition duration-150 ease-out hover:ease-in "
-            type="submit"
-            disabled={loading}
-          >
-            {`${lineItem ? 'Update' : 'Add To'} Cart`}
-          </button>
-        </form>
-      </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   ) : null
 }

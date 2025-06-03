@@ -29,7 +29,7 @@ const vehicleData: VehicleData[] = [
     image:
       'https://cdn.bajajauto.com/-/media/assets/bajajauto/home-page/product-highlights/motorcycle-img/motorcycle-3.jpg',
     buttonText: 'Know More',
-    href: '/motorcycles',
+    href: 'https://bajaj-ordercloud.vercel.app/motorcycles',
   },
   {
     id: 2,
@@ -47,16 +47,16 @@ const vehicleData: VehicleData[] = [
     image:
       'https://cdn.bajajauto.com/-/media/assets/bajajauto/home-page/product-highlights/3wheeler/gogo_homepage_image.webp',
     buttonText: 'Know More',
-    href: '/threeWheelers',
+    href: 'https://bajaj-ordercloud.vercel.app/threeWheelers',
   },
   {
     id: 4,
-    title: 'KTM',
+    title: 'Bajaj',
     subtitle: 'READY TO RACE',
     image:
-      'https://cdn.bajajauto.com/-/media/assets/bajajauto/home-page/product-highlights/ktm-img/ktm-3.jpg',
+      'https://cdn.bajajauto.com/-/media/assets/bajajauto/home-page/product-highlights/motorcycle-img/motorcycle-1.jpg',
     buttonText: 'Know More',
-    href: 'https://ktm-oc.vercel.app/',
+    href: 'https://bajaj-ordercloud.vercel.app/',
   },
   {
     id: 4,
@@ -108,7 +108,7 @@ const VehicleCarousel: React.FC = () => {
               <div className="bg-white overflow-x-hidden shadow-sm  h-full">
                 {/* Image Container */}
                 <div className="relative  bg-gray-100">
-                  <ImageHelper url={vehicle.image} alt={vehicle.title} className="" />
+                  <ImageHelper url={vehicle.image} alt={vehicle.title} className="h-full" />
                 </div>
 
                 {/* Content */}
